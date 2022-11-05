@@ -95,6 +95,74 @@ Port 1608
 ...
 ```
 
+## SSL Certificate
+**Create Directory for Certificates**
+```zsh
+sudo mkdir /etc/ssl/CA
+sudo mkdir /etc/ssl/newcerts
+sudo sh -c "echo '01' > /etc/ssl/CA/serial"
+sudo touch /etc/ssl/CA/index.txt
+```
+
+**Configure OpenSSL**
+```zsh
+sudo nano /etc/ssl/openssl.cnf
+```
+```
+...
+# Line 83
+dir             = /etc/ssl              # Where everything is kept
+database        = $dir/CA/index.txt     # database index file.
+certificate     = $dir/certs/cacert.pem # The CA certificate
+serial          = $dir/CA/serial        # The current serial number
+private_key     = $dir/private/cakey.pem# The private key
+x509_extensions = v3_ca                 # The extensions to add to the cert
+
+# Line 121
+policy          = policy_anything
+...
+```
+
+**Create an Extension File**
+```zsh
+nano domains.ext
+```
+```
+...
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = www.sija.sch.id
+DNS.2 = lms.sija.sch.id
+...
+```
+
+**Create Self-signed CA Certificate**
+```zsh
+sudo openssl req -new -x509 -keyout cakey.pem -out cacert.pem
+```
+
+**Move Certificate**
+```zsh
+sudo mv cakey.pem /etc/ssl/private/
+sudo mv cacert.pem /etc/ssl/certs/
+```
+
+**Generate a Certificate signed by the CA**
+```zsh
+sudo openssl req -new -keyout server.key -out server.csr
+sudo openssl ca -in server.csr -config /etc/ssl/openssl.cnf -extfile domains.ext
+```
+```
+Copy and paste everything beginning with the line: -----BEGIN CERTIFICATE----- and continuing through the line: ----END CERTIFICATE----- lines to a file named server.crt
+```
+```zsh
+sudo mv server.crt /etc/ssl/certs/
+sudo mv server.key /etc/ssl/private/
+```
+
 ## NTP Server
 **1. Install Chrony**
 ```zsh
@@ -285,8 +353,8 @@ sudo nano /etc/proftpd/tls.conf
 TLSEngine               on
 TLSLog                  /var/log/proftpd/tls.log
 TLSProtocol             TLSv1.3
-TLSRSACertificateFile                   /etc/ssl/private/proftpd.pem
-TLSRSACertificateKeyFile                /etc/ssl/private/proftpd.pem
+TLSRSACertificateFile                   /etc/ssl/certs/server.crt
+TLSRSACertificateKeyFile                /etc/ssl/private/server.key
 ...
 ```
 
@@ -304,7 +372,7 @@ sudo apt install apache2 -y
 ```
 
 **2. Configure VirtualHost**
-1. HTTP
+- HTTP
 ```zsh
 cd /etc/apache2/sites-available
 sudo cp 000-default.conf www.sija.sch.id.conf
@@ -323,7 +391,7 @@ sudo nano www.sija.sch.id.conf
 ...
 ```
 
-2. HTTPS
+- HTTPS
 ```zsh
 sudo a2enmod ssl
 cd /etc/apache2/sites-available
@@ -341,11 +409,14 @@ sudo nano www.sija.sch.id.conf
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
         SSLEngine on
-        SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
-        SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+        SSLCertificateFile      /etc/ssl/certs/server.crt
+        SSLCertificateKeyFile   /etc/ssl/private/server.key
     </VirtualHost>
 </IfModule>
 ...
+```
+```zsh
+sudo cp /etc/ssl/certs/cacert.pem /var/www/sija.sch.id
 ```
 
 **3. Activate VirtualHost**
@@ -382,12 +453,12 @@ sudo systemctl restart apache2
 ```
 
 **Testing Web**
-1. Linux
+- Linux
 ```zsh
 curl http://www.sija.sch.id
 curl https://www.sija.sch.id
 ```
-2. Windows
+- Windows
 ```
 [HTTP] Access Web with URL http://www.sija.sch.id
 [HTTPS] Download CA File from URL http://www.sija.sch.id/cacert.pem
@@ -395,3 +466,6 @@ Install/Import the Certificate
 Access Web with URL https://www.sija.sch.id
 ```
 
+## Database Server
+
+## Mail Server dan Webmail
