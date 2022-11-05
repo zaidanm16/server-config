@@ -80,7 +80,7 @@ sudo nano /etc/hosts
 ...
 ```
 
-**Install Curl, IPTables, net-tools, ssh**
+**Install Curl, IPTables, net-tools, SSH**
 ```zsh
 sudo apt install curl iptables net-tools ssh -y
 ```
@@ -242,7 +242,7 @@ sudo apt install vsftpd -y
 ```
 
 **2. Configure ProFTPD**
-1. User-Login Auth
+- User-Login Auth
 ```zsh
 sudo nano /etc/proftpd/proftpd.conf
 ```
@@ -253,7 +253,7 @@ ServerName "srv.sija.sch.id"
 DefaultRoot /home/Public
 ...
 ```
-2. Anonymous Auth
+- Anonymous Auth
 ```zsh
 sudo nano /etc/proftpd/proftpd.conf
 ```
@@ -268,7 +268,7 @@ DefaultRoot /home/Public
 </Anonymous>
 ...
 ```
-3. FTP Secure
+- FTP Secure
 ```zsh
 sudo nano /etc/proftpd/proftpd.conf
 ```
