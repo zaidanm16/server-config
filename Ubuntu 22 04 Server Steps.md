@@ -656,16 +656,16 @@ sudo systemctl restart dovecot
 **3. Add Mail User Accounts**
 ```zsh
 sudo apt install mailutils -y
-sudo echo 'export MAIL=$HOME/Maildir/' >> /etc/profile.d/mail.sh
-sudo useradd -m zaidansatu
-sudo useradd -m zaidandua
-sudo passwd zaidansatu
-sudo passwd zaidandua
+sudo -i
+echo 'export MAIL=$HOME/Maildir/' >> /etc/profile.d/mail.sh
+exit
+sudo adduser zaidansatu
+sudo adduser zaidandua
 ```
 
 **4. Install Roundcube**
 ```zsh
-sudo mysql -u root p
+sudo mysql -u root -p
 ```
 ```
 create database roundcube;
@@ -701,8 +701,8 @@ sudo nano /etc/roundcube/config.inc.php
 ```
 ```
 ...
-$config['default_host'] = 'tls://mail.srv.world';       # Line 36
-$config['smtp_server'] = 'tls://mail.srv.world';        # Line 50
+$config['default_host'] = 'tls://srv.sija.sch.id';      # Line 36
+$config['smtp_server'] = 'tls://srv.sija.sch.id';       # Line 50
 $config['smtp_port'] = 587;                             # Line 53
 $config['smtp_user'] = '%u';                            # Line 57
 $config['smtp_pass'] = '%p';                            # Line 61
