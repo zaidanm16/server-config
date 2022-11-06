@@ -107,7 +107,7 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = www.azem.my.id
-DNS.2 = lms.azem.my.id
+DNS.2 = mail.azem.my.id
 ...
 ```
 
