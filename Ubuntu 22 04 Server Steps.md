@@ -467,5 +467,52 @@ Access Web with URL https://www.sija.sch.id
 ```
 
 ## Database Server
+**1. Install MariaDB Server**
+```zsh
+sudo apt install mariadb-server -y
+```
+
+**2. Initial Setting**
+```zsh
+sudo mysql_secure_installation
+```
+```
+n, n, y all
+```
+
+**3. Connect to MariaDB**
+```zsh
+sudo mysql -u root -p
+```
+```
+show grants for root@localhost;
+```
+```
+show databases;
+```
+```
+select user,host,password from mysql.user;
+```
+
+**4. Install phpMyAdmin**
+```zsh
+sudo apt install php8.1 php8.1-cgi libapache2-mod-php8.1 php8.1-common php-pear php8.1-mbstring phpmyadmin -y
+```
+
+**5. Delete All data from MariaDB dan Initialize it**
+```zsh
+sudo systemctl stop mariadb
+sudo rm -rf /var/lib/mysql/*
+sudo mysql_install_db --datadir=/var/lib/mysql --user=mysql
+sudo systemctl start mariadb
+```
+
+**6. Create new SuperUser account for phpMyadmin**
+```
+CREATE USER 'mele'@localhost IDENTIFIED BY 'mele16';
+SELECT User FROM mysql.user;
+GRANT ALL PRIVILEGES ON *.* TO 'mele'@localhost IDENTIFIED BY 'mele16';
+FLUSH PRIVILEGES;
+```
 
 ## Mail Server dan Webmail
