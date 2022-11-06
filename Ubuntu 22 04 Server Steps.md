@@ -595,16 +595,6 @@ smtps     inet  n       -       y       -       -       smtpd
 ```
 
 ```zsh
-sudo nano /etc/dovecot/conf.d/10-ssl.conf
-```
-```
-ssl = yes    # Line 6
-
-ssl_cert = </etc/ssl/certs/server.crt   # Line 12
-ssl_key = </etc/ssl/private/server.key  # Line 13
-```
-
-```zsh
 sudo systemctl restart postfix
 ```
 
@@ -648,6 +638,17 @@ sudo nano /etc/dovecot/conf.d/10-master.conf
   }
 ...
 ```
+
+```zsh
+sudo nano /etc/dovecot/conf.d/10-ssl.conf
+```
+```
+ssl = yes    # Line 6
+
+ssl_cert = </etc/ssl/certs/server.crt   # Line 12
+ssl_key = </etc/ssl/private/server.key  # Line 13
+```
+
 ```zsh
 sudo systemctl restart dovecot
 ```
