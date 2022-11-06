@@ -516,3 +516,235 @@ FLUSH PRIVILEGES;
 ```
 
 ## Mail Server dan Webmail
+**1. Install Postfix to configure SMTP Server**
+```zsh
+sudo apt install postfix sasl2-bin -y
+```
+```
+select [No Configuration]
+```
+```zsh
+sudo cp /usr/share/postfix/main.cf.dist /etc/postfix/main.cf
+sudo nano /etc/postfix/main.cf
+```
+```
+...
+mail_owner = postfix            # Line 78
+myhostname = srv.sija.sch.id    # Line 94
+mydomain = sija.sch.id          # Line 102
+myorigin = $mydomain            # Line 123
+inet_interfaces = all           # Line 137
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  # Line 185
+local_recipient_maps = unix:passwd.byname $alias_maps    # Line 228
+mynetworks_style = subnet       # Line 270
+mynetworks = 127.0.0.0/8, 10.20.20.0/24  # Line 287
+alias_maps = hash:/etc/aliases  # Line 407
+alias_database = hash:/etc/aliases  # Line 418
+home_mailbox = Maildir/         # Line 440
+sendmail_path = /usr/sbin/postfix   # Line 650
+newaliases_path = /usr/bin/newaliases  # Line 655
+mailq_path = /usr/bin/mailq     # Line 660
+setgid_group = postdrop         # Line 666
+#html_directory =
+#manpage_directory =
+#sample_directory =
+#readme_directory =
+
+disable_vrfy_command = yes
+
+smtpd_helo_required = yes
+
+message_size_limit = 10240000
+
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+smtpd_recipient_restrictions = permit_mynetworks, permit_auth_destination, permit_sasl_authenticated, reject
+smtpd_client_restrictions = permit_mynetworks, reject_unknown_client_hostname, permit
+smtpd_sender_restrictions = permit_mynetworks, reject_unknown_sender_domain, reject_non_fqdn_sender
+smtpd_helo_restrictions = permit_mynetworks, reject_unknown_hostname, reject_non_fqdn_hostname, reject_invalid_hostname, permit
+
+smtpd_use_tls = yes
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtpd_tls_cert_file = /etc/ssl/certs/server.crt
+smtpd_tls_key_file = /etc/ssl/private/server.key
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+...
+```
+
+```zsh
+sudo nano /etc/postfix/master.cf
+```
+```
+...
+# line 19, 20, 22 : uncomment
+submission inet n       -       y       -       -       smtpd
+  -o syslog_name=postfix/submission
+#  -o smtpd_tls_security_level=encrypt
+  -o smtpd_sasl_auth_enable=yes
+
+# line 33-36 : uncomment
+smtps     inet  n       -       y       -       -       smtpd
+  -o syslog_name=postfix/smtps
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_sasl_auth_enable=yes
+...
+```
+
+```zsh
+sudo nano /etc/dovecot/conf.d/10-ssl.conf
+```
+```
+ssl = yes    # Line 6
+
+ssl_cert = </etc/ssl/certs/server.crt   # Line 12
+ssl_key = </etc/ssl/private/server.key  # Line 13
+```
+
+```zsh
+sudo systemctl restart postfix
+```
+
+**2. Install Dovecot to configure POP/IMAP server**
+```zsh
+sudo apt install dovecot-core dovecot-pop3d dovecot-imapd -y
+sudo nano /etc/dovecot/dovecot.conf
+```
+```
+...
+listen = *, ::  # Line 30
+...
+```
+```zsh
+sudo nano /etc/dovecot/conf.d/10-auth.conf
+```
+```
+...
+disable_plaintext_auth = no     # Line 10
+auth_mechanisms = plain login   # Line 100
+...
+```
+```zsh
+sudo nano /etc/dovecot/conf.d/10-mail.conf
+```
+```
+...
+mail_location = maildir:~/Maildir
+...
+```
+```zsh
+sudo nano /etc/dovecot/conf.d/10-master.conf
+```
+```
+...
+  # Postfix smtp-auth
+  unix_listener /var/spool/postfix/private/auth {   # Line 107-109
+    mode = 0666
+    user = postfix
+    group = postfix
+  }
+...
+```
+```zsh
+sudo systemctl restart dovecot
+```
+
+**3. Add Mail User Accounts**
+```zsh
+sudo apt install mailutils -y
+sudo echo 'export MAIL=$HOME/Maildir/' >> /etc/profile.d/mail.sh
+sudo useradd -m zaidansatu
+sudo useradd -m zaidandua
+sudo passwd zaidansatu
+sudo passwd zaidandua
+```
+
+**4. Install Roundcube**
+```zsh
+sudo mysql -u root p
+```
+```
+create database roundcube;
+grant all privileges on roundcube.* to roundcube@'localhost' identified by 'pass16';
+flush privileges; 
+exit 
+```
+```zsh
+sudo apt install roundcube roundcube-mysql -y
+```
+```
+select [No] to set manually later
+```
+```zsh
+cd /usr/share/dbconfig-common/data/roundcube/install
+sudo mysql -u roundcube -D roundcube -p < mysql
+cd
+sudo nano /etc/roundcube/debian-db.php
+```
+```
+...
+$dbuser='roundcube';
+$dbpass='pass16';
+$basepath='';
+$dbname='roundcube';
+$dbserver='localhost';
+$dbport='3306';
+$dbtype='mysql';
+...
+```
+```zsh
+sudo nano /etc/roundcube/config.inc.php
+```
+```
+...
+$config['default_host'] = 'tls://mail.srv.world';       # Line 36
+$config['smtp_server'] = 'tls://mail.srv.world';        # Line 50
+$config['smtp_port'] = 587;                             # Line 53
+$config['smtp_user'] = '%u';                            # Line 57
+$config['smtp_pass'] = '%p';                            # Line 61
+$config['product_name'] = 'SIJA Webmail';               # Line 68
+$config['default_port'] = 143;
+$config['smtp_auth_type'] = 'LOGIN';
+$config['smtp_helo_host'] = 'srv.sija.sch.id';
+$config['mail_domain'] = 'sija.sch.id';
+$config['useragent'] = 'SIJA Webmail';
+$config['imap_conn_options'] = array(
+  'ssl'         => array(
+    'verify_peer' => true,
+    'CN_match' => 'sija.sch.id',
+    'allow_self_signed' => true,
+    'ciphers' => 'HIGH:!SSLv2:!SSLv3',
+  ),
+);
+$config['smtp_conn_options'] = array(
+  'ssl'         => array(
+    'verify_peer' => true,
+    'CN_match' => 'sija.sch.id',
+    'allow_self_signed' => true,
+    'ciphers' => 'HIGH:!SSLv2:!SSLv3',
+  ),
+);
+...
+```
+```zsh
+sudo nano /etc/apache2/conf-enabled/roundcube.conf
+```
+```
+...
+Alias /roundcube /var/lib/roundcube/public_html
+...
+```
+
+**5. Restart Apache2**
+```zsh
+sudo systemctl restart apache2
+```
+
+**Testing**
+```
+Access to [https://sija.sch.id/roundcube/]
+```
+
