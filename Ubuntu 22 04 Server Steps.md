@@ -206,7 +206,7 @@ sudo apt install bind9 bind9utils -y
 cd /etc/bind
 sudo nano named.conf.options
 ```
-```json
+```
 ...
 allow-query { localhost; 10.20.20.0/24; };
 allow-transfer { localhost; };
@@ -216,7 +216,7 @@ recursion yes;
 ```zsh
 sudo nano named.conf.local
 ```
-```json
+```
 ...
 zone "sija.sch.id" {
         type master;
@@ -235,7 +235,7 @@ zone "20.20.10.in-addr.arpa" {
 sudo cp db.local db.sija.sch.id
 sudo nano db.sija.sch.id
 ```
-```json
+```
 ...
 ;
 ; BIND data file for sija.sch.id
@@ -263,7 +263,7 @@ www     IN      CNAME   srv.sija.sch.id.
 sudo cp db.127 db.10
 sudo nano db.10
 ```
-```json
+```
 ...
 ;
 ; BIND reverse data file for sija.sch.id
