@@ -33,7 +33,7 @@ cd /etc/netplan
 sudo mv 00-installer-config.yaml 01-netcfg.yaml
 sudo nano 01-netcfg.yaml
 ```
-```
+```yaml
 ...
 network:
   ethernets:
@@ -206,7 +206,7 @@ sudo apt install bind9 bind9utils -y
 cd /etc/bind
 sudo nano named.conf.options
 ```
-```
+```json
 ...
 allow-query { localhost; 10.20.20.0/24; };
 allow-transfer { localhost; };
@@ -216,7 +216,7 @@ recursion yes;
 ```zsh
 sudo nano named.conf.local
 ```
-```
+```json
 ...
 zone "sija.sch.id" {
         type master;
@@ -235,7 +235,7 @@ zone "20.20.10.in-addr.arpa" {
 sudo cp db.local db.sija.sch.id
 sudo nano db.sija.sch.id
 ```
-```
+```json
 ...
 ;
 ; BIND data file for sija.sch.id
@@ -263,7 +263,7 @@ www     IN      CNAME   srv.sija.sch.id.
 sudo cp db.127 db.10
 sudo nano db.10
 ```
-```
+```json
 ...
 ;
 ; BIND reverse data file for sija.sch.id
@@ -314,7 +314,7 @@ sudo apt install vsftpd -y
 ```zsh
 sudo nano /etc/proftpd/proftpd.conf
 ```
-```
+```xml
 ...
 UseIPv6 off
 ServerName "srv.sija.sch.id"
@@ -325,7 +325,7 @@ DefaultRoot /home/Public
 ```zsh
 sudo nano /etc/proftpd/proftpd.conf
 ```
-```
+```xml
 ...
 UseIPv6 off
 ServerName "srv.sija.sch.id"
@@ -348,7 +348,7 @@ Include /etc/proftpd/tls.conf
 ```zsh
 sudo nano /etc/proftpd/tls.conf
 ```
-```
+```xml
 ...
 TLSEngine               on
 TLSLog                  /var/log/proftpd/tls.log
@@ -378,7 +378,7 @@ cd /etc/apache2/sites-available
 sudo cp 000-default.conf www.sija.sch.id.conf
 sudo nano www.sija.sch.id.conf
 ```
-```
+```xml
 ...
 <VirtualHost *:80>
         ServerName www.sija.sch.id
@@ -398,7 +398,7 @@ cd /etc/apache2/sites-available
 sudo cp 000-default.conf www.sija.sch.id.conf
 sudo nano www.sija.sch.id.conf
 ```
-```
+```xml
 ...
 <IfModule mod_ssl.c>
     <VirtualHost *:443>
@@ -432,7 +432,7 @@ sudo mkdir /var/www/sija.sch.id/
 ```zsh
 sudo nano /var/www/sija.sch.id/index.html
 ```
-```
+```html
 ...
 <html>
     <head>
@@ -529,7 +529,7 @@ home_mailbox = Maildir/ # Add
 ```zsh
 sudo nano /etc/dovecot/dovecot.conf
 ```
-```
+```xml
 ...
 listen = *, ::  # Line 30
 ...
@@ -537,7 +537,7 @@ listen = *, ::  # Line 30
 ```zsh
 sudo nano /etc/dovecot/conf.d/10-auth.conf
 ```
-```
+```xml
 ...
 disable_plaintext_auth = no     # Line 10
 ...
@@ -545,7 +545,7 @@ disable_plaintext_auth = no     # Line 10
 ```zsh
 sudo nano /etc/dovecot/conf.d/10-mail.conf
 ```
-```
+```xml
 ...
 mail_location = maildir:~/Maildir
 ...
@@ -582,7 +582,7 @@ Global Privileges
 sudo apt install roundcube -y
 sudo nano /etc/roundcube/config.inc.php 
 ```
-```
+```php
 ...
 $config['default_host'] = 'srv.sija.sch.id';      # Line 36
 $config['smtp_server'] = 'srv.sija.sch.id';       # Line 50
@@ -597,7 +597,7 @@ cd /etc/apache2/sites-available
 sudo cp 000-default.conf roundcube.conf
 sudo nano roundcube.conf
 ```
-```
+```xml
 ...
 <VirtualHost *:80>
         ServerName mail.sija.sch.id
