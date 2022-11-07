@@ -85,7 +85,7 @@ nano /etc/ssl/openssl.cnf
 # Line 83
 dir             = /etc/ssl              # Where everything is kept
 database        = $dir/CA/index.txt     # database index file.
-certificate     = $dir/certs/ca.pem # The CA certificate
+certificate     = $dir/certs/ca.pem     # The CA certificate
 serial          = $dir/CA/serial        # The current serial number
 private_key     = $dir/private/cakey.pem# The private key
 x509_extensions = v3_ca                 # The extensions to add to the cert
@@ -113,27 +113,18 @@ DNS.2 = mail.azem.my.id
 
 **Create Self-signed CA Certificate**
 ```zsh
-openssl req -new -x509 -keyout cakey.pem -out ca.pem
-```
-
-**Move Certificate**
-```zsh
-mv cakey.pem /etc/ssl/private/
-mv ca.pem /etc/ssl/certs/
+openssl req -new -x509 -keyout /etc/ssl/private/cakey.pem -out /etc/ssl/certs/ca.pem
 ```
 
 **Generate a Certificate signed by the CA**
 ```zsh
-openssl req -new -keyout srv.key -out server.csr
+openssl req -new -keyout /etc/ssl/private/srv.key -out srv.csr
 openssl ca -in server.csr -config /etc/ssl/openssl.cnf -extfile domains.ext
+nano /etc/ssl/certs/srv.crt
 ```
 ```
 Copy and paste everything beginning with the line: -----BEGIN CERTIFICATE----- and continuing through the line: ----END CERTIFICATE----- lines to a file named srv.crt
-```
-```zsh
-mv srv.crt /etc/ssl/certs/
-mv srv.key /etc/ssl/private/
-```
+``` 
 
 ## NTP Server
 **1. Install Chrony**
@@ -478,7 +469,7 @@ db administrator : azem
 ## Mail Server
 **1. Install Postfix and Dovecot**
 ```zsh
-apt install postfix dovecot dovecot-imapd dovecot-pop3d -y
+apt install postfix dovecot-imapd dovecot-pop3d -y
 ```
 
 **2. Configure SMTP and IMAP Server**
