@@ -149,26 +149,17 @@ DNS.2 = mail.sija.sch.id
 
 **Create Self-signed CA Certificate**
 ```zsh
-sudo openssl req -new -x509 -keyout cakey.pem -out cacert.pem
-```
-
-**Move Certificate**
-```zsh
-sudo mv cakey.pem /etc/ssl/private/
-sudo mv cacert.pem /etc/ssl/certs/
+sudo openssl req -new -x509 -keyout /etc/ssl/private/cakey.pem -out /etc/ssl/certs/cacert.pem
 ```
 
 **Generate a Certificate signed by the CA**
 ```zsh
-sudo openssl req -new -keyout server.key -out server.csr
+sudo openssl req -new -keyout /etc/ssl/private/server.key -out server.csr
 sudo openssl ca -in server.csr -config /etc/ssl/openssl.cnf -extfile domains.ext
+sudo nano /etc/ssl/certs/server.crt
 ```
 ```
 Copy and paste everything beginning with the line: -----BEGIN CERTIFICATE----- and continuing through the line: ----END CERTIFICATE----- lines to a file named server.crt
-```
-```zsh
-sudo mv server.crt /etc/ssl/certs/
-sudo mv server.key /etc/ssl/private/
 ```
 
 ## NTP Server
@@ -260,10 +251,8 @@ $TTL    604800
 @       IN      A       10.20.20.16
 @       IN      MX  10  mail.sija.sch.id.
 
-srv     IN      A       10.20.20.16
+www     IN      A       10.20.20.16
 mail    IN      A       10.20.20.16
-
-www     IN      CNAME   srv.sija.sch.id.
 ...
 ```
 
@@ -286,7 +275,7 @@ $TTL    604800
 ;
 @       IN      NS      sija.sch.id.
 
-16      IN      PTR     srv.sija.sch.id.
+16      IN      PTR     www.sija.sch.id.
 16      IN      PTR     mail.sija.sch.id.
 ...
 ```
@@ -299,7 +288,6 @@ sudo systemctl restart named
 **5. Testing DNS**
 ```zsh
 nslookup sija.sch.id
-nslookup srv.sija.sch.id
 nslookup www.sija.sch.id
 nslookup mail.sija.sch.id
 ```
@@ -635,7 +623,7 @@ sudo systemctl restart apache2 postfix dovecot
 
 **Testing Webmail**
 ```
-Access https://mail.sija.sch.id
+Access with HTTP or HTTPS [https://mail.sija.sch.id]
 Login with User that has been created before
 Testing Sending Mail
 ```
