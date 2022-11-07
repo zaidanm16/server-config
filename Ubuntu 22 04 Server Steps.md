@@ -17,6 +17,14 @@ azem	ALL=(ALL) NOPASSWD:ALL
 sudo passwd root
 ```
 
+**Disable Cloud init**
+```zsh
+sudo touch /etc/cloud/cloud-init.disabled
+sudo dpkg-reconfigure cloud-init # disable semua service, unceklis semua kecuali "None"
+sudo apt purge cloud-init 
+sudo rm -rf /etc/cloud/ && sudo rm -rf /var/lib/cloud/
+```
+
 **Change login banner**
 ```zsh
 sudo nano /etc/issue
@@ -135,7 +143,7 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = www.sija.sch.id
-DNS.2 = lms.sija.sch.id
+DNS.2 = mail.sija.sch.id
 ...
 ```
 
@@ -306,7 +314,7 @@ nslookup mail.sija.sch.id
 ## FTP Server
 **1. Install ProFTPD**
 ```zsh
-sudo apt install vsftpd -y
+sudo apt install proftpd -y
 ```
 
 **2. Configure ProFTPD**
