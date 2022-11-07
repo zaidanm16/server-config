@@ -355,7 +355,7 @@ nano www.azem.id.conf
 ```zsh
 a2enmod ssl
 cd /etc/apache2/sites-available
-cp 000-default.conf www.azem.id.conf
+cp default-ssl.conf www.azem.id.conf
 nano www.azem.id.conf
 ```
 ```xml
