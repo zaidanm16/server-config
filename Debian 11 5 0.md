@@ -38,7 +38,7 @@ systemctl restart networking
 
 **Change Hostname**
 ```zsh
-hostnamectl set-hostname lab-srv.azem.my.id
+hostnamectl set-hostname lab-srv.azem.id
 ```
 
 **Map host on /etc/hosts**
@@ -47,7 +47,7 @@ nano /etc/hosts
 ```
 ```
 ...
-20.20.20.16 lab-srv.azem.my.id lab-srv
+20.20.20.16 lab-srv.azem.id lab-srv
 ...
 ```
 
@@ -106,8 +106,8 @@ basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = www.azem.my.id
-DNS.2 = mail.azem.my.id
+DNS.1 = www.azem.id
+DNS.2 = mail.azem.id
 ...
 ```
 
@@ -181,9 +181,9 @@ nano named.conf.local
 ```
 ```
 ...
-zone "azem.my.id" {
+zone "azem.id" {
         type master;
-        file "/etc/bind/db.azem.my.id";
+        file "/etc/bind/db.azem.id";
 };
 
 zone "20.20.20.in-addr.arpa" {
@@ -195,25 +195,25 @@ zone "20.20.20.in-addr.arpa" {
 
 **3. Configure Zone Files**
 ```zsh
-cp db.local db.azem.my.id
-nano db.azem.my.id
+cp db.local db.azem.id
+nano db.azem.id
 ```
 ```
 ...
 ;
-; BIND data file for azem.my.id
+; BIND data file for azem.id
 ;
 $TTL    604800
-@       IN      SOA     lab-srv.azem.my.id. root.azem.my.id. (
+@       IN      SOA     lab-srv.azem.id. root.azem.id. (
                               2         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-@       IN      NS      azem.my.id.
+@       IN      NS      azem.id.
 @       IN      A       20.20.20.16
-@       IN      MX  10  mail.azem.my.id.
+@       IN      MX  10  mail.azem.id.
 
 mail    IN      A       20.20.20.16
 www     IN      A       20.20.20.16   
@@ -227,20 +227,20 @@ nano db.20
 ```
 ...
 ;
-; BIND reverse data file for azem.my.id
+; BIND reverse data file for azem.id
 ;
 $TTL    604800
-@       IN      SOA     lab-srv.azem.my.id. root.azem.my.id. (
+@       IN      SOA     lab-srv.azem.id. root.azem.id. (
                               1         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-@       IN      NS      azem.my.id.
+@       IN      NS      azem.id.
 
-16      IN      PTR     mail.azem.my.id.
-16      IN      PTR     www.azem.my.id.
+16      IN      PTR     mail.azem.id.
+16      IN      PTR     www.azem.id.
 ...
 ```
 
@@ -251,9 +251,9 @@ systemctl restart named
 
 **5. Testing DNS**
 ```zsh
-nslookup azem.my.id
-nslookup www.azem.my.id
-nslookup mail.azem.my.id
+nslookup azem.id
+nslookup www.azem.id
+nslookup mail.azem.id
 ```
 
 **DNS Client (Windows)**
@@ -277,7 +277,7 @@ nano /etc/proftpd/proftpd.conf
 ```xml
 ...
 UseIPv6 off
-ServerName "lab-srv.azem.my.id"
+ServerName "lab-srv.azem.id"
 DefaultRoot /home/Public
 ...
 ```
@@ -288,7 +288,7 @@ nano /etc/proftpd/proftpd.conf
 ```xml
 ...
 UseIPv6 off
-ServerName "lab-srv.azem.my.id"
+ServerName "lab-srv.azem.id"
 DefaultRoot /home/Public
 <Anonymous /home/Public>
     User azem
@@ -335,16 +335,16 @@ apt install apache2 -y
 - HTTP
 ```zsh
 cd /etc/apache2/sites-available
-cp 000-default.conf www.azem.my.id.conf
-nano www.azem.my.id.conf
+cp 000-default.conf www.azem.id.conf
+nano www.azem.id.conf
 ```
 ```xml
 ...
 <VirtualHost *:80>
-        ServerName www.azem.my.id
-        ServerAlias azem.my.id
-        ServerAdmin webmaster@azem.my.id
-        DocumentRoot /var/www/azem.my.id/
+        ServerName www.azem.id
+        ServerAlias azem.id
+        ServerAdmin webmaster@azem.id
+        DocumentRoot /var/www/azem.id/
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
@@ -355,17 +355,17 @@ nano www.azem.my.id.conf
 ```zsh
 a2enmod ssl
 cd /etc/apache2/sites-available
-cp 000-default.conf www.azem.my.id.conf
-nano www.azem.my.id.conf
+cp 000-default.conf www.azem.id.conf
+nano www.azem.id.conf
 ```
 ```xml
 ...
 <IfModule mod_ssl.c>
     <VirtualHost *:443>
-        ServerName www.azem.my.id
-        ServerAlias azem.my.id
-        ServerAdmin webmaster@azem.my.id
-        DocumentRoot /var/www/azem.my.id/
+        ServerName www.azem.id
+        ServerAlias azem.id
+        ServerAdmin webmaster@azem.id
+        DocumentRoot /var/www/azem.id/
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
         SSLEngine on
@@ -376,21 +376,21 @@ nano www.azem.my.id.conf
 ...
 ```
 ```zsh
-cp /etc/ssl/certs/ca.pem /var/www/azem.my.id
+cp /etc/ssl/certs/ca.pem /var/www/azem.id
 ```
 
 **3. Activate VirtualHost**
 ```zsh
-a2ensite www.azem.my.id.conf
+a2ensite www.azem.id.conf
 systemctl reload apache2
 ```
 
 **4. Create a page**
 ```zsh
-mkdir /var/www/azem.my.id/
+mkdir /var/www/azem.id/
 ```
 ```zsh
-nano /var/www/azem.my.id/index.html
+nano /var/www/azem.id/index.html
 ```
 ```html
 ...
@@ -415,15 +415,15 @@ systemctl restart apache2
 **Testing Web**
 - Linux
 ```zsh
-curl http://www.azem.my.id
-curl https://www.azem.my.id
+curl http://www.azem.id
+curl https://www.azem.id
 ```
 - Windows
 ```
-[HTTP] Access Web with URL http://www.azem.my.id
-[HTTPS] Download CA File from URL http://www.azem.my.id/ca.pem
+[HTTP] Access Web with URL http://www.azem.id
+[HTTPS] Download CA File from URL http://www.azem.id/ca.pem
 Install/Import the Certificate
-Access Web with URL https://www.azem.my.id
+Access Web with URL https://www.azem.id
 ```
 
 ## Database Server
@@ -463,7 +463,7 @@ dpkg-reconfigure phpmyadmin
 ```
 ```
 use user root@localhost
-db administrator : azem
+db administrator : root
 ```
 
 ## Mail Server
@@ -477,7 +477,7 @@ apt install postfix dovecot-imapd dovecot-pop3d -y
 dpkg-reconfigure postfix
 ```
 ```
-domain : azem.my.id
+domain : azem.id
 network add 10.20.20.0/24
 ```
 ```zsh
@@ -525,7 +525,7 @@ adduser zaidandua
 
 **4. Create database for Roundcube**
 ```
-Open azem.my.id/phpMyAdmin on browser
+Open azem.id/phpMyAdmin on browser
 Login with user root
 Create new User accounts
 - Username : roundcube
@@ -544,8 +544,8 @@ nano /etc/roundcube/config.inc.php
 ```
 ```php
 ...
-$config['default_host'] = 'lab-srv.azem.my.id';      # Line 36
-$config['smtp_server'] = 'lab-srv.azem.my.id';       # Line 50
+$config['default_host'] = 'lab-srv.azem.id';      # Line 36
+$config['smtp_server'] = 'lab-srv.azem.id';       # Line 50
 $config['smtp_port'] = 25;                    # Line 53
 $config['smtp_user'] = '';                    # Line 57
 $config['smtp_pass'] = '';                    # Line 61
@@ -560,16 +560,16 @@ nano roundcube.conf
 ```xml
 ...
 <VirtualHost *:80>
-        ServerName mail.azem.my.id
-        ServerAdmin webmaster@azem.my.id
+        ServerName mail.azem.id
+        ServerAdmin webmaster@azem.id
         DocumentRoot /var/lib/roundcube/public_html
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 <IfModule mod_ssl.c>
     <VirtualHost *:443>
-        ServerName mail.azem.my.id
-        ServerAdmin webmaster@azem.my.id
+        ServerName mail.azem.id
+        ServerAdmin webmaster@azem.id
         DocumentRoot /var/lib/roundcube/public_html
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -587,7 +587,7 @@ systemctl restart apache2 postfix dovecot
 
 **Testing Webmail**
 ```
-Access https://mail.azem.my.id
+Access https://mail.azem.id
 Login with User that has been created before
 Testing Sending Mail
 ```
