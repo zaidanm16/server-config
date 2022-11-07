@@ -171,7 +171,7 @@ nano named.conf.options
 ```
 ```
 ...
-allow-query { localhost; 10.20.20.0/24; };
+allow-query { localhost; 20.20.20.0/24; };
 allow-transfer { localhost; };
 recursion yes;
 ...
